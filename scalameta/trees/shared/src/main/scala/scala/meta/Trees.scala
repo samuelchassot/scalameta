@@ -299,6 +299,11 @@ object Defn {
                     templ: Template) extends Defn with Member.Term {
     checkFields(templ.is[Template.Quasi] || templ.stats.forall(!_.is[Ctor]))
   }
+  @ast class Case(mods: List[Mod],
+                  name: scala.meta.Type.Name,
+                  tparams: List[scala.meta.Type.Param],
+                  ctor: Ctor.Primary,
+                  inits: List[Init]) extends Defn with Member.Type with Member.Term
 }
 
 @ast class Pkg(ref: Term.Ref, stats: List[Stat])
