@@ -470,7 +470,8 @@ lazy val semanticdbIntegration = project
     javacSemanticdbDirectory := (target.in(Compile).value / "javac-semanticdb"),
     javaHome in Compile := {
       // force javac to fork by setting javaHome to workaround https://github.com/sbt/zinc/issues/520
-      Some(file(sys.props("java.home")).getParentFile)
+      //Some(file(sys.props("java.home")).getParentFile)
+      Some(file("C:/Program Files/Java/jdk1.8.0_181"))
     },
     managedClasspath in Compile += Keys.`package`.in(semanticdbJavacPlugin, Compile).value,
     javacOptions ++= {
@@ -747,47 +748,47 @@ lazy val publishableSettings = Def.settings(
   pomIncludeRepository := { x =>
     false
   },
-  mimaPreviousArtifacts := {
-    if (organization.value == "org.scalameta") {
-      val rxVersion = """^(\d+)\.(\d+)\.(\d+)(?:-([0-9A-Za-z-]+))?$""".r
-      val previousVersion = version.value match {
-        case rxVersion(major, "0", "0", suffix) if suffix != null =>
-          if (suffix.startsWith("-M")) None
-          else Some(s"$major.0.0-RC1")
-        case rxVersion(major, minor, patch, suffix) if suffix != null =>
-          Some(s"$major.$minor.$patch")
-        case rxVersion(major, "0", "0", null) =>
-          Some(s"$major.0.0-RC1")
-        case rxVersion(major, minor, "0", null) =>
-          Some(s"$major.${minor.toInt - 1}.0")
-        case rxVersion(major, minor, patch, null) =>
-          Some(s"$major.$minor.0")
-        case _ =>
-          sys.error(s"Invalid version number: ${version.value}")
-      }
-      val previousArtifact = {
-        // NOTE: Here's what I'd like to do, but I can't because of deprecations:
-        //   val isJVM = crossPlatform.value == JVMPlatform
-        // Here's my second best guess, but it doesn't work due to some reason:
-        //   val isJVM = platformDepsCrossVersion.value == CrossVersion.binary
-        val isJVM = {
-          val isJS = platformDepsCrossVersion.value == ScalaJSCrossVersion.binary
-          val isNative = platformDepsCrossVersion.value == ScalaNativeCrossVersion.binary
-          !isJS && !isNative
-        }
-        if (isJVM) {
-          previousVersion.map { previousVersion =>
-            organization.value % moduleName.value % previousVersion cross crossVersion.value
-          }
-        } else {
-          None
-        }
-      }
-      previousArtifact.toSet
-    } else {
-      Set()
-    }
-  },
+  // mimaPreviousArtifacts := {
+  //   if (organization.value == "org.scalameta") {
+  //     val rxVersion = """^(\d+)\.(\d+)\.(\d+)(?:-([0-9A-Za-z-]+))?$""".r
+  //     val previousVersion = version.value match {
+  //       case rxVersion(major, "0", "0", suffix) if suffix != null =>
+  //         if (suffix.startsWith("-M")) None
+  //         else Some(s"$major.0.0-RC1")
+  //       case rxVersion(major, minor, patch, suffix) if suffix != null =>
+  //         Some(s"$major.$minor.$patch")
+  //       case rxVersion(major, "0", "0", null) =>
+  //         Some(s"$major.0.0-RC1")
+  //       case rxVersion(major, minor, "0", null) =>
+  //         Some(s"$major.${minor.toInt - 1}.0")
+  //       case rxVersion(major, minor, patch, null) =>
+  //         Some(s"$major.$minor.0")
+  //       case _ =>
+  //         sys.error(s"Invalid version number: ${version.value}")
+  //     }
+  //     val previousArtifact = {
+  //       // NOTE: Here's what I'd like to do, but I can't because of deprecations:
+  //       //   val isJVM = crossPlatform.value == JVMPlatform
+  //       // Here's my second best guess, but it doesn't work due to some reason:
+  //       //   val isJVM = platformDepsCrossVersion.value == CrossVersion.binary
+  //       val isJVM = {
+  //         val isJS = platformDepsCrossVersion.value == ScalaJSCrossVersion.binary
+  //         val isNative = platformDepsCrossVersion.value == ScalaNativeCrossVersion.binary
+  //         !isJS && !isNative
+  //       }
+  //       if (isJVM) {
+  //         previousVersion.map { previousVersion =>
+  //           organization.value % moduleName.value % previousVersion cross crossVersion.value
+  //         }
+  //       } else {
+  //         None
+  //       }
+  //     }
+  //     previousArtifact.toSet
+  //   } else {
+  //     Set()
+  //   }
+  // },
   mimaBinaryIssueFilters += Mima.languageAgnosticCompatibilityPolicy,
   mimaBinaryIssueFilters += Mima.scalaSpecificCompatibilityPolicy,
   mimaBinaryIssueFilters ++= Mima.apiCompatibilityExceptions,

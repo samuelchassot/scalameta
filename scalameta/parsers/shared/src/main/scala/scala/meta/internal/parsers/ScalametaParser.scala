@@ -520,7 +520,8 @@ class ScalametaParser(input: Input, dialect: Dialect) { parser =>
       token.is[TemplateIntro] || token.is[DclIntro] ||
       (token.is[Unquote] && token.next.is[DefIntro]) ||
       (token.is[Ellipsis] && token.next.is[DefIntro]) ||
-      (token.is[KwCase] && token.isCaseClassOrObject)
+      (token.is[KwCase] && token.isCaseClassOrObject) ||
+      (token.is[KwCase] && ! token.isCaseClassOrObject)
     }
   }
 
@@ -2760,6 +2761,8 @@ class ScalametaParser(input: Input, dialect: Dialect) { parser =>
         funDefOrDclOrSecondaryCtor(mods)
       case KwType() =>
         typeDefOrDcl(mods)
+      case KwCase() if ahead(token.isNot[KwObject]) && ahead(token.isNot[KwClass]) =>
+        caseDef(mods)
       case _ =>
         tmplDef(mods)
     }
@@ -2844,6 +2847,16 @@ class ScalametaParser(input: Input, dialect: Dialect) { parser =>
       if (isMacro) Defn.Macro(mods, name, tparams, paramss, restype, rhs)
       else Defn.Def(mods, name, tparams, paramss, restype, rhs)
     }
+  }
+
+  def caseDef(mods : List[Mod]) : Stat with Member.Type = {
+    accept[KwCase]
+    val caseName = typeName()
+    val typeParams = typeParamClauseOpt(ownerIsType = true, ctxBoundsAllowed = true)
+    val ctor = primaryCtor(OwnedByClass)
+
+    Defn.Case(mods, caseName, typeParams, ctor, Nil)
+
   }
 
   def typeDefOrDcl(mods: List[Mod]): Member.Type with Stat = atPos(mods, auto) {

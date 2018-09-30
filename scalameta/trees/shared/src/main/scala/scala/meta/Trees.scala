@@ -303,7 +303,7 @@ object Defn {
                   name: scala.meta.Type.Name,
                   tparams: List[scala.meta.Type.Param],
                   ctor: Ctor.Primary,
-                  inits: List[Init]) extends Defn with Member.Type with Member.Term
+                  inits: List[Init]) extends Defn with Member.Type // with Member.Type
 }
 
 @ast class Pkg(ref: Term.Ref, stats: List[Stat])
