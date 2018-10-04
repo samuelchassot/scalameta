@@ -14,6 +14,8 @@ class MyTest extends FunSuite {
           case Arbre(x: Int)
         }
       """.stripMargin
-    println(program.parse[Source].get.structure)
+    //println(program.parse[Source].get.structure)
+
+    println("case Foo(x : Int) extends Bar(x)".parse[Stat].get.structure)
   }
 }

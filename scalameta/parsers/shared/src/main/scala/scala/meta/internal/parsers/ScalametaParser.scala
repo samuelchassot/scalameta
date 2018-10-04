@@ -2855,6 +2855,13 @@ class ScalametaParser(input: Input, dialect: Dialect) { parser =>
     val typeParams = typeParamClauseOpt(ownerIsType = true, ctxBoundsAllowed = true)
     val ctor = primaryCtor(OwnedByClass)
 
+    val parents = if(token.is[KwExtends]) {
+      accept[KwExtends]
+      templateParents()
+    } else {
+      Nil
+    }
+
     Defn.Case(mods, caseName, typeParams, ctor, Nil)
 
   }
