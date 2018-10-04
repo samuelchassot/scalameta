@@ -2852,18 +2852,48 @@ class ScalametaParser(input: Input, dialect: Dialect) { parser =>
   def caseDef(mods : List[Mod]) : Stat with Member.Type = {
     accept[KwCase]
     val caseName = typeName()
-    val typeParams = typeParamClauseOpt(ownerIsType = true, ctxBoundsAllowed = true)
-    val ctor = primaryCtor(OwnedByClass)
+    if(token.is[Comma]){
+      readCases(mods, caseName)
 
-    val parents = if(token.is[KwExtends]) {
-      accept[KwExtends]
-      templateParents()
-    } else {
-      Nil
+    }else{
+
+      val typeParams = typeParamClauseOpt(ownerIsType = true, ctxBoundsAllowed = true)
+      val ctor = primaryCtor(OwnedByClass)
+
+      val parents = if(token.is[KwExtends]) {
+        accept[KwExtends]
+        templateParents()
+      } else {
+        Nil
+      }
+
+      println(token)
+      Defn.Case(mods, caseName, typeParams, ctor, parents)
     }
 
-    Defn.Case(mods, caseName, typeParams, ctor, Nil)
 
+  }
+
+  def readCases(mods : List[Mod], first : Type.Name) : Defn.SimpleCases = {
+    val cases = List.newBuilder[Type.Name]
+    cases += first
+
+    while(token.is[Comma]){
+      accept[Comma]
+      cases += typeName()
+    }
+
+    val name = Type.Name("Dummy")
+
+    Defn.SimpleCases(mods, name, cases.result())
+
+  }
+
+  def caseCtor(): Ctor.Primary ={
+    val mods = constructorAnnots() ++ ctorModifiers()
+    val name = autoPos(Name.Anonymous())
+    val paramss = paramClauses(ownerIsType = true, false)
+    Ctor.Primary(mods, name, paramss)
   }
 
   def typeDefOrDcl(mods: List[Mod]): Member.Type with Stat = atPos(mods, auto) {

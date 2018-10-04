@@ -1,11 +1,13 @@
 package scala.meta
 
 import org.scalameta.invariants._
+
 import scala.meta.classifiers._
 import scala.meta.inputs._
 import scala.meta.tokens._
 import scala.meta.prettyprinters._
 import scala.meta.internal.trees._
+import scala.meta.tokens.Token.Ident
 
 @root trait Tree extends InternalTree {
   def parent: Option[Tree]
@@ -250,7 +252,13 @@ object Decl {
                   bounds: scala.meta.Type.Bounds) extends Decl with Member.Type
 }
 
+
+
 @branch trait Defn extends Stat
+@branch trait EnumCase extends Defn with Member.Type
+
+//trait EnumCase extends Defn with Member.Type
+
 object Defn {
   @ast class Val(mods: List[Mod],
                  pats: List[Pat] @nonEmpty,
@@ -299,11 +307,18 @@ object Defn {
                     templ: Template) extends Defn with Member.Term {
     checkFields(templ.is[Template.Quasi] || templ.stats.forall(!_.is[Ctor]))
   }
+
+
   @ast class Case(mods: List[Mod],
                   name: scala.meta.Type.Name,
                   tparams: List[scala.meta.Type.Param],
                   ctor: Ctor.Primary,
-                  inits: List[Init]) extends Defn with Member.Type // with Member.Type
+                  inits: List[Init]) extends EnumCase
+
+  @ast class SimpleCases(mods : List[Mod],
+                        name : scala.meta.Type.Name,
+                        cases : List[scala.meta.Type.Name]) extends EnumCase
+
 }
 
 @ast class Pkg(ref: Term.Ref, stats: List[Stat])

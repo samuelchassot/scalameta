@@ -9,13 +9,13 @@ class MyTest extends FunSuite {
   test("my first test") {
     val program =
       """
-        class Foo{
-          case Bar(x : Int)
-          case Arbre(x: Int)
+        class Foo(x: Int){
+          case Foo, Bar
+          class B
         }
-      """.stripMargin
-    //println(program.parse[Source].get.structure)
+      """
 
-    println("case Foo(x : Int) extends Bar(x)".parse[Stat].get.structure)
+    println(program.parse[Source].get.structure)
+    println("case Foo,Bar".parse[Stat].get.structure)
   }
 }
