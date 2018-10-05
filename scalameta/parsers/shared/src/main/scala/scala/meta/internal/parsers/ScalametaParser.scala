@@ -531,7 +531,8 @@ class ScalametaParser(input: Input, dialect: Dialect) { parser =>
       token.is[Modifier] || token.is[At] ||
       token.is[KwClass] || token.is[KwObject] || token.is[KwTrait] ||
       (token.is[Unquote] && token.next.is[TemplateIntro]) ||
-      (token.is[KwCase] && token.isCaseClassOrObject)
+      (token.is[KwCase] && token.isCaseClassOrObject) ||
+      token.is[KwEnum]
     }
   }
 
