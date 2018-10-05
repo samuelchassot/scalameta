@@ -2936,6 +2936,8 @@ class ScalametaParser(input: Input, dialect: Dialect) { parser =>
         val casePos = in.tokenPos
         next()
         objectDef(mods :+ atPos(casePos, casePos)(Mod.Case()))
+      case KwEnum() =>
+        enumDef(mods)
       case _ =>
         syntaxError(s"expected start of definition", at = token)
     }
@@ -2982,6 +2984,19 @@ class ScalametaParser(input: Input, dialect: Dialect) { parser =>
     if (!mods.has[Mod.Override])
       rejectMod[Mod.Abstract](mods, Messages.InvalidAbstract)
     Defn.Object(mods, termName(), templateOpt(OwnedByObject))
+  }
+
+  def enumDef(mods: List[Mod]) : Defn.Enum = atPos(mods, auto){
+    accept[KwEnum]
+    rejectMod[Mod.Override](mods, Messages.InvalidOverrideClass)
+
+    val enumName = typeName()
+    rejectModCombination[Mod.Final, Mod.Sealed](mods, s"enum $enumName")
+    val typeParams = typeParamClauseOpt(ownerIsType = true, ctxBoundsAllowed = true)
+    val ctor = primaryCtor(OwnedByClass)
+
+    Defn.Enum(mods, enumName, typeParams, ctor, templateOpt(OwnedByClass))
+
   }
 
 /* -------- CONSTRUCTORS ------------------------------------------- */
