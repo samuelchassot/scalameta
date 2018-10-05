@@ -309,6 +309,12 @@ object Defn {
   }
 
 
+  @ast class Enum(mods : List[Mod],
+                  name: scala.meta.Type.Name,
+                  tparams: List[scala.meta.Type.Param],
+                  ctor: Ctor.Primary,
+                  templ: Template) extends Defn with Member.Type
+
   @ast class Case(mods: List[Mod],
                   name: scala.meta.Type.Name,
                   tparams: List[scala.meta.Type.Param],
