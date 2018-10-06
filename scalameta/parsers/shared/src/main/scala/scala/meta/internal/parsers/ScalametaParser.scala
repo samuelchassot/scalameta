@@ -2763,6 +2763,7 @@ class ScalametaParser(input: Input, dialect: Dialect) { parser =>
       case KwType() =>
         typeDefOrDcl(mods)
       case KwCase() if ahead(token.isNot[KwObject]) && ahead(token.isNot[KwClass]) =>
+        println("KwCase in defOfDclOfSecondaryCtor")
         caseDef(mods)
       case _ =>
         tmplDef(mods)
@@ -2868,7 +2869,6 @@ class ScalametaParser(input: Input, dialect: Dialect) { parser =>
         Nil
       }
 
-      println(token)
       Defn.Case(mods, caseName, typeParams, ctor, parents)
     }
 
@@ -2938,6 +2938,7 @@ class ScalametaParser(input: Input, dialect: Dialect) { parser =>
         next()
         objectDef(mods :+ atPos(casePos, casePos)(Mod.Case()))
       case KwEnum() =>
+        println("KwEnum in tmplDef")
         enumDef(mods)
       case _ =>
         syntaxError(s"expected start of definition", at = token)

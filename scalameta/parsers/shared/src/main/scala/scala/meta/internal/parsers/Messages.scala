@@ -31,4 +31,5 @@ object Messages {
   val InvalidAbstract = "`abstract' modifier can be used only for classes"
   val InvalidOverrideClass = "`override' modifier not allowed for classes"
   val InvalidLazyClasses = "classes cannot be lazy"
+  val InvalidOverrideEnum = "`override' modifier not allowed for enums"
 }
