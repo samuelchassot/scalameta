@@ -3,19 +3,22 @@ package org.scalameta.tests
 import org.scalatest._
 
 import scala.meta._
+import scala.meta.dialects._
 
 class MyTest extends FunSuite {
 
   test("my first test") {
     val program =
       """
-        class Foo(x: Int){
-          case Foo, Bar
-          class B
-        }
+          private override enum Foo(x: Int) extends Bar{
+            case Bar(y : Int) extends Foo(y);
+            final case A,B,C;
+          }
       """
 
-    println(program.parse[Source].get.structure)
-    println("case Foo,Bar".parse[Stat].get.structure)
+
+
+    println(Dotty(program).parse[Source].get.structure)
+    //println("case Foo(x : Int) extends Bar(8)".parse[Stat].get.structure)
   }
 }

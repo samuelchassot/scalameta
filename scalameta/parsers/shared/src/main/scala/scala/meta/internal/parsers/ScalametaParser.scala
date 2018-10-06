@@ -2763,7 +2763,6 @@ class ScalametaParser(input: Input, dialect: Dialect) { parser =>
       case KwType() =>
         typeDefOrDcl(mods)
       case KwCase() if ahead(token.isNot[KwObject]) && ahead(token.isNot[KwClass]) =>
-        println("KwCase in defOfDclOfSecondaryCtor")
         caseDef(mods)
       case _ =>
         tmplDef(mods)
@@ -2938,9 +2937,8 @@ class ScalametaParser(input: Input, dialect: Dialect) { parser =>
         next()
         objectDef(mods :+ atPos(casePos, casePos)(Mod.Case()))
       case KwEnum() =>
-        println("KwEnum in tmplDef")
         enumDef(mods)
-      case _ =>
+      case _enumDef =>
         syntaxError(s"expected start of definition", at = token)
     }
   }
@@ -2990,14 +2988,14 @@ class ScalametaParser(input: Input, dialect: Dialect) { parser =>
 
   def enumDef(mods: List[Mod]) : Defn.Enum = atPos(mods, auto){
     accept[KwEnum]
-    rejectMod[Mod.Override](mods, Messages.InvalidOverrideClass)
+    rejectMod[Mod.Override](mods, Messages.InvalidOverrideEnum)
 
     val enumName = typeName()
     rejectModCombination[Mod.Final, Mod.Sealed](mods, s"enum $enumName")
     val typeParams = typeParamClauseOpt(ownerIsType = true, ctxBoundsAllowed = true)
     val ctor = primaryCtor(OwnedByClass)
 
-    Defn.Enum(mods, enumName, typeParams, ctor, templateOpt(OwnedByClass))
+    Defn.Enum(mods, enumName, typeParams, ctor, templateOpt(OwnedByEnum))
 
   }
 
@@ -3150,11 +3148,13 @@ class ScalametaParser(input: Input, dialect: Dialect) { parser =>
     def isTerm = this eq OwnedByObject
     def isClass = (this eq OwnedByCaseClass) || (this eq OwnedByClass)
     def isTrait = this eq OwnedByTrait
+    def isEnum : Boolean = this eq OwnedByEnum
   }
   object OwnedByTrait extends TemplateOwner
   object OwnedByCaseClass extends TemplateOwner
   object OwnedByClass extends TemplateOwner
   object OwnedByObject extends TemplateOwner
+  object OwnedByEnum extends TemplateOwner
 
   def templateParents(): List[Init] = {
     val parents = ListBuffer[Init]()
@@ -3213,7 +3213,7 @@ class ScalametaParser(input: Input, dialect: Dialect) { parser =>
       }
     } else {
       val startPos = in.tokenPos
-      val (self, body) = templateBodyOpt(parenMeansSyntaxError = !owner.isClass)
+      val (self, body) = templateBodyOpt(parenMeansSyntaxError = !(owner.isClass || owner.isEnum))
       atPos(startPos, auto)(Template(Nil, Nil, self, body))
     }
   }

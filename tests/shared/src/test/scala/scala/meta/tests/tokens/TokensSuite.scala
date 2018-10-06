@@ -46,7 +46,21 @@ class TokensApiSuite extends FunSuite {
     val convert = scala.meta.inputs.Input.stringToInput
     val tokenize = scala.meta.tokenizers.Tokenize.scalametaTokenize
     val dialect = Scala211
+    //toParseEnum
+
     code.tokenize(convert, tokenize, dialect).get
+  }
+
+  test("Allan") {
+//    val s = """
+//      enum Foo {
+//        case A, B
+//        val x = 1
+//      }
+//    """
+    val s = "enum"
+    val tokens = tokenize(s)
+    println(tokens.map(_.getClass).mkString("\n"))
   }
 
   test("Maintains Tokens type when implementing collections API methods") {
