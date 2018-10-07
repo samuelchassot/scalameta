@@ -213,7 +213,7 @@ class ScalametaParser(input: Input, dialect: Dialect) { parser =>
           if (curr.is[LeftParen]) ')' :: sepRegions
           else if (curr.is[LeftBracket]) ']' :: sepRegions
           else if (curr.is[LeftBrace]) '}' :: sepRegions
-          else if (curr.is[CaseIntro]) '\u21d2' :: sepRegions
+          //else if (curr.is[CaseIntro]) '\u21d2' :: sepRegions
           else if (curr.is[RightBrace]) {
             var sepRegions1 = sepRegions
             while (!sepRegions1.isEmpty && sepRegions1.head != '}') sepRegions1 = sepRegions1.tail

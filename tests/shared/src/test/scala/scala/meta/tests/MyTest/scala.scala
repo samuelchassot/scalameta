@@ -10,9 +10,11 @@ class MyTest extends FunSuite {
   test("my first test") {
     val program =
       """
-          private override enum Foo(x: Int) extends Bar{
-            case Bar(y : Int) extends Foo(y);
-            final case A,B,C;
+          private enum Foo(x: Int) extends Bar{
+            case Bar(y : Int) extends Foo(y)
+            val x = 3
+            final case A,B,C
+            case A,B,C,D,E,F,G
           }
       """
 
